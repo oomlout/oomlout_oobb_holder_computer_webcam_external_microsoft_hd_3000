@@ -11,8 +11,8 @@ def make_scad(**kwargs):
 
     # save_type variables
     if True:
-        #filter = ""
-        filter = "test"
+        filter = ""
+        #filter = "test"
 
         #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
@@ -26,9 +26,9 @@ def make_scad(**kwargs):
     # default variables
     if True:
         kwargs["size"] = "oobb"
-        kwargs["width"] = 12
-        kwargs["height"] = 12
-        kwargs["thickness"] = 6
+        kwargs["width"] = 4
+        kwargs["height"] = 3
+        kwargs["thickness"] = 3
 
     # project_variables
     if True:
@@ -38,15 +38,15 @@ def make_scad(**kwargs):
     if True:
 
         part_default = {} 
-        part_default["project_name"] = "test" ####### neeeds setting
+        part_default["project_name"] = "oobb_holder_computer_webcam_external_microsoft_hd_3000" ####### neeeds setting
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
-        p3["thickness"] = 6
+        #p3["thickness"] = 6
         part["kwargs"] = p3
-        part["name"] = "test"
+        part["name"] = "base"
         parts.append(part)
 
         
@@ -61,25 +61,69 @@ def make_scad(**kwargs):
             else:
                 print(f"skipping {part['name']}")
 
-def get_test(thing, **kwargs):
+def get_base(thing, **kwargs):
 
     depth = kwargs.get("thickness", 4)
-    prepare_print = kwargs.get("prepare_print", True)
+    prepare_print = kwargs.get("prepare_print", False)
 
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
     #pos[2] += -20
 
-    #add _cylinder
+    #add plate
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
-    p3["shape"] = f"oobb_cylinder"
-    p3["radius"] = 30
+    p3["shape"] = f"oobb_plate"    
     p3["depth"] = depth
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
+    #add holes
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_holes"    
+    p3["depth"] = depth
+    p3["holes"] = "perimeter"
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)         
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+
+    #hole_positions
+    position_holes = []
+    position_holes.append([[-15.3,7.75,0],"m1_4_tight"])
+    position_holes.append([[15,-4.25,0],"m1_4_tight"])
+    position_holes.append([[15.1,8.05,0],"m1"])
+    position_holes.append([[-15.3,-4.75,0],"m1"])
+
+    #add holes
+    for position_hole in position_holes:
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_hole"
+        p3["pos"] = position_hole[0]
+        p3["radius_name"] = position_hole[1]
+        #p3["m"] = "#" 
+        oobb_base.append_full(thing,**p3)   
+        #add cylinder
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "p"
+        p3["shape"] = f"oobb_cylinder"
+        lift = 8
+        p3["depth"] = lift #full length of screw
+        pos1 = copy.deepcopy(position_hole[0])
+        pos1[2] += lift/2
+        p3["pos"] = pos1
+        p3["radius"] = 3/2
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
+
+
+
+
+
+    
 
     
 
