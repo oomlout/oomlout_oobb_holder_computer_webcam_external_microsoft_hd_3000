@@ -1,0 +1,6 @@
+project_id: oomlout_oobb_holder_computer_webcam_external_microsoft_hd_3000
+project_name: Oomlout Oobb Holder Computer Webcam External Microsoft Hd 3000
+project_repo: https://github.com/oomlout/oomlout_oobb_holder_computer_webcam_external_microsoft_hd_3000
+production_format:
+  oolc_1:
+    file_location: source_files/oolc_1.cdr
