@@ -1,0 +1,24 @@
+- pos:
+  - -15
+  - 5.5
+  - 0
+  radius_name: m1_4_tight
+  note: "top left"
+- pos:
+  - 15
+  - 5.5
+  - 0  
+  radius_name: m1_4_tight
+  note: "top right"
+- pos:
+  - 15
+  - -7
+  - 0
+  radius_name: m1
+  note: "bottom right"
+- pos:
+  - -15
+  - -7
+  - 0
+  radius_name: m1
+  note: "bottom left"

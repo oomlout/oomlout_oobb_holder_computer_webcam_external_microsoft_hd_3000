@@ -12,21 +12,21 @@ def make_scad(**kwargs):
     # save_type variables
     if True:
         filter = ""
-        #filter = "test"
+        #filter = "base"
 
-        #kwargs["save_type"] = "none"
+        kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
         kwargs["modes"] = ["3dpr", "laser", "true"]
-        #kwargs["modes"] = ["3dpr"]
+        kwargs["modes"] = ["3dpr"]
         #kwargs["modes"] = ["laser"]
 
     # default variables
     if True:
         kwargs["size"] = "oobb"
-        kwargs["width"] = 4
+        kwargs["width"] = 5
         kwargs["height"] = 3
         kwargs["thickness"] = 3
 
@@ -47,6 +47,14 @@ def make_scad(**kwargs):
         #p3["thickness"] = 6
         part["kwargs"] = p3
         part["name"] = "base"
+        parts.append(part)
+
+        part = copy.deepcopy(part_default)
+        p3 = copy.deepcopy(kwargs)
+        p3["thickness"] = 18
+        p3["width"] = 3
+        part["kwargs"] = p3
+        part["name"] = "cover"
         parts.append(part)
 
         
@@ -83,6 +91,128 @@ def get_base(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_holes"    
+    p3["both_holes"] = True
+    p3["depth"] = depth
+    p3["holes"] = "perimeter"
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)         
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+    #extra holes
+    #add holes zip tie
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"    
+    
+    poss = []
+    pos1 = copy.deepcopy(pos)
+    pos1[0] += (3*15) / 2
+    pos11 = copy.deepcopy(pos1)
+    pos11[1] += 3
+    pos12 = copy.deepcopy(pos1)
+    pos12[1] += -3
+    poss.append(pos11)
+    poss.append(pos12)
+    p3["pos"] = poss
+    p3["radius_name"] = "m3"    
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+    #add zip tie clearance square
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_cube"
+    width = 3
+    height = 8
+    depth = 1.5
+    p3["size"] = [width,height,depth]
+    pos1 = copy.deepcopy(pos1)
+    pos1[2] += 0
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+
+    # #hole_positions
+    # mounting_holes = []
+    # mounting_holes.append({"pos": [-15.3,7.75,0], "radius_name": "m1_4_tight"})
+    # mounting_holes.append({"pos": [15,-4.25,0], "radius_name": "m1_4_tight"})
+    # mounting_holes.append({"pos": [15.1,8.05,0], "radius_name": "m1"})
+    # mounting_holes.append({"pos": [-15.3,-4.75,0], "radius_name": "m1"})
+    
+    # # dump to mounting_holes.yaml
+    # import yaml
+    # with open('mounting_holes.yaml', 'w') as file:
+    #     yaml.dump(mounting_holes, file)
+    
+    import yaml
+    with open('oobb_data/mounting_holes.yaml', 'r') as file:
+        mounting_holes = yaml.load(file, Loader=yaml.FullLoader)
+
+    
+    #add holes
+    for position_hole in mounting_holes:
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_hole"
+        p3["pos"] = position_hole["pos"]
+        p3["radius_name"] = position_hole["radius_name"]
+        #p3["m"] = "#" 
+        oobb_base.append_full(thing,**p3)   
+        #add cylinder for screw
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "p"
+        p3["shape"] = f"oobb_cylinder"
+        lift = 12
+        p3["depth"] = lift #full length of screw
+        pos1 = copy.deepcopy(position_hole["pos"])
+        pos1[2] += lift/2
+        p3["pos"] = pos1
+        p3["radius"] = 3/2
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
+        #add cylinder for support
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "p"
+        p3["shape"] = f"oobb_cylinder"
+        lift = lift-1.52
+        p3["depth"] = lift #full length of screw
+        pos1 = copy.deepcopy(position_hole["pos"])
+        pos1[2] += lift/2
+        p3["pos"] = pos1
+        p3["radius"] = 6/2
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
+
+    kwargs["lift_screw"] = 3
+    get_connecting_screws(thing, **kwargs)
+
+
+
+def get_cover(thing, **kwargs):
+
+    depth = kwargs.get("thickness", 4)
+    prepare_print = kwargs.get("prepare_print", False)
+
+    pos = kwargs.get("pos", [0, 0, 0])
+    #pos = copy.deepcopy(pos)
+    #pos[2] += -20
+
+
+
+    #add plate
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_plate"    
+    p3["depth"] = depth
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)         
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+    #add holes
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_holes"    
+    p3["both_holes"] = True
     p3["depth"] = depth
     p3["holes"] = "perimeter"
     #p3["m"] = "#"
@@ -90,42 +220,43 @@ def get_base(thing, **kwargs):
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
 
-    #hole_positions
-    position_holes = []
-    position_holes.append([[-15.3,7.75,0],"m1_4_tight"])
-    position_holes.append([[15,-4.25,0],"m1_4_tight"])
-    position_holes.append([[15.1,8.05,0],"m1"])
-    position_holes.append([[-15.3,-4.75,0],"m1"])
+    #add cavity cube
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_cube"
+    p3["size"] = [37,25,depth-2]
+    pos1 = copy.deepcopy(pos)
+    pos1[2] += 0
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
 
-    #add holes
-    for position_hole in position_holes:
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "n"
-        p3["shape"] = f"oobb_hole"
-        p3["pos"] = position_hole[0]
-        p3["radius_name"] = position_hole[1]
-        #p3["m"] = "#" 
-        oobb_base.append_full(thing,**p3)   
-        #add cylinder
-        p3 = copy.deepcopy(kwargs)
-        p3["type"] = "p"
-        p3["shape"] = f"oobb_cylinder"
-        lift = 8
-        p3["depth"] = lift #full length of screw
-        pos1 = copy.deepcopy(position_hole[0])
-        pos1[2] += lift/2
-        p3["pos"] = pos1
-        p3["radius"] = 3/2
-        #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+    # add cable escape cube
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_cube"
+    p3["size"] = [8,8,5]
+    pos1 = copy.deepcopy(pos)
+    pos1[0] += 20
+    pos1[1] += 0
+    pos1[2] += 0
+    p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
 
 
+    #lens hole
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"
+    pos1 = copy.deepcopy(pos)
+    pos1[2] += 0
+    p3["pos"] = pos1
+    p3["radius"] = 10/2
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
 
-
-
-    
-
-    
+    get_connecting_screws(thing, **kwargs)
 
     if prepare_print:
         #put into a rotation object
@@ -148,6 +279,41 @@ def get_base(thing, **kwargs):
         p3["shape"] = f"oobb_slice"
         #p3["m"] = "#"
         oobb_base.append_full(thing,**p3)
+
+
+def get_connecting_screws(thing, **kwargs):    
+    pos = kwargs.get("pos", [0, 0, 0])
+    lift_screw = kwargs.get("lift_screw", 0)
+
+    position_screws = []
+    dep = 15 
+    position_screws.append([7.5,15,dep])
+    position_screws.append([7.5,-15,dep])
+    position_screws.append([-7.5,15,dep])
+    position_screws.append([-7.5,-15,dep])
+
+    for position_screw in position_screws:
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_screw_countersunk"  
+        p3["depth"] = dep + 3   
+        p3["radius_name"] = "m3"
+        pos1 = copy.deepcopy(position_screw)
+        pos1[2] += lift_screw
+        p3["pos"] = pos1
+        p3["nut"] = True
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
+
+
+
+
+
+    
+
+    
+
+    
     
 ###### utilities
 
