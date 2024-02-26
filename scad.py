@@ -258,7 +258,7 @@ def get_connecting_screws(thing, **kwargs):
     lift_screw = kwargs.get("lift_screw", 0)
 
     position_screws = []
-    dep = 18 
+    dep = kwargs.get("thickness", None) 
     position_screws.append([7.5,15,dep])
     position_screws.append([7.5,-15,dep])
     position_screws.append([-7.5,15,dep])
@@ -274,7 +274,7 @@ def get_connecting_screws(thing, **kwargs):
         pos1[2] += lift_screw
         p3["pos"] = pos1
         p3["nut"] = True
-        #p3["m"] = "#"
+        p3["m"] = "#"
         oobb_base.append_full(thing,**p3)
 
 
