@@ -14,12 +14,12 @@ def make_scad(**kwargs):
         filter = ""
         #filter = "base"
 
-        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
-        kwargs["modes"] = ["3dpr", "laser", "true"]
+        #kwargs["modes"] = ["3dpr", "laser", "true"]
         kwargs["modes"] = ["3dpr"]
         #kwargs["modes"] = ["laser"]
 
@@ -51,7 +51,7 @@ def make_scad(**kwargs):
 
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
-        p3["thickness"] = 18
+        p3["thickness"] = 13
         p3["width"] = 3
         part["kwargs"] = p3
         part["name"] = "cover"
@@ -87,63 +87,33 @@ def get_base(thing, **kwargs):
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
+    
     #add holes
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_holes"    
     p3["both_holes"] = True
     p3["depth"] = depth
-    p3["holes"] = "perimeter"
+    p3["holes"] = ["left","right","top"]
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
     oobb_base.append_full(thing,**p3)
+    
     #extra holes
     #add holes zip tie
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_hole"    
-    
-    poss = []
-    pos1 = copy.deepcopy(pos)
-    pos1[0] += (3*15) / 2
-    pos11 = copy.deepcopy(pos1)
-    pos11[1] += 3
-    pos12 = copy.deepcopy(pos1)
-    pos12[1] += -3
-    poss.append(pos11)
-    poss.append(pos12)
-    p3["pos"] = poss
-    p3["radius_name"] = "m3"    
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
     #add zip tie clearance square
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
-    p3["shape"] = f"oobb_cube"
-    width = 3
-    height = 8
-    depth = 1.5
-    p3["size"] = [width,height,depth]
+    p3["shape"] = f"oobb_zip_tie_clearance_small"
     pos1 = copy.deepcopy(pos1)
-    pos1[2] += 0
+    pos1[0] += 2*15
     p3["pos"] = pos1
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
 
+    
 
-    # #hole_positions
-    # mounting_holes = []
-    # mounting_holes.append({"pos": [-15.3,7.75,0], "radius_name": "m1_4_tight"})
-    # mounting_holes.append({"pos": [15,-4.25,0], "radius_name": "m1_4_tight"})
-    # mounting_holes.append({"pos": [15.1,8.05,0], "radius_name": "m1"})
-    # mounting_holes.append({"pos": [-15.3,-4.75,0], "radius_name": "m1"})
-    
-    # # dump to mounting_holes.yaml
-    # import yaml
-    # with open('mounting_holes.yaml', 'w') as file:
-    #     yaml.dump(mounting_holes, file)
-    
     import yaml
     with open('oobb_data/mounting_holes.yaml', 'r') as file:
         mounting_holes = yaml.load(file, Loader=yaml.FullLoader)
@@ -158,11 +128,12 @@ def get_base(thing, **kwargs):
         p3["radius_name"] = position_hole["radius_name"]
         #p3["m"] = "#" 
         oobb_base.append_full(thing,**p3)   
+        
         #add cylinder for screw
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "p"
         p3["shape"] = f"oobb_cylinder"
-        lift = 12
+        lift = 3 + 5 # add three as it is from the base
         p3["depth"] = lift #full length of screw
         pos1 = copy.deepcopy(position_hole["pos"])
         pos1[2] += lift/2
@@ -170,11 +141,12 @@ def get_base(thing, **kwargs):
         p3["radius"] = 3/2
         #p3["m"] = "#"
         oobb_base.append_full(thing,**p3)
+        
         #add cylinder for support
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "p"
         p3["shape"] = f"oobb_cylinder"
-        lift = lift-1.52
+        lift = lift-1.5
         p3["depth"] = lift #full length of screw
         pos1 = copy.deepcopy(position_hole["pos"])
         pos1[2] += lift/2
@@ -286,7 +258,7 @@ def get_connecting_screws(thing, **kwargs):
     lift_screw = kwargs.get("lift_screw", 0)
 
     position_screws = []
-    dep = 15 
+    dep = 18 
     position_screws.append([7.5,15,dep])
     position_screws.append([7.5,-15,dep])
     position_screws.append([-7.5,15,dep])
