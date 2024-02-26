@@ -186,7 +186,7 @@ def get_cover(thing, **kwargs):
     p3["shape"] = f"oobb_holes"    
     p3["both_holes"] = True
     p3["depth"] = depth
-    p3["holes"] = "perimeter"
+    p3["holes"] = ["left","right"]
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
@@ -274,7 +274,7 @@ def get_connecting_screws(thing, **kwargs):
         pos1[2] += lift_screw
         p3["pos"] = pos1
         p3["nut"] = True
-        p3["m"] = "#"
+        #p3["m"] = "#"
         oobb_base.append_full(thing,**p3)
 
 
