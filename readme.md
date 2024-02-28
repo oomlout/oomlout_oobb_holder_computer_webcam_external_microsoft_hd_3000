@@ -1,7 +1,4 @@
 # Oomlout Oobb Holder Computer Webcam External Microsoft Hd 3000
-Oomlout Oobb Holder Computer Webcam External Microsoft Hd 3000  
-  
-
 [![](image_600.jpg)](image.jpg)
 
 
@@ -16,10 +13,11 @@ Oomlout Oobb Holder Computer Webcam External Microsoft Hd 3000
 
 
 
+Oomlout Oobb Holder Computer Webcam External Microsoft Hd 3000  
+  
 
 
-## corel working
-![](working_600.png) 
+
 
 
 
